@@ -1,15 +1,101 @@
-nats:
-  image: nats:alpine
+# nats:
+#   image: nats:alpine
+
+#   jetstream:
+#     enabled: true
+
+#     fileStorage:
+#       enabled: true
+#       storageDirectory: /nats-js-data/
+#       existingClaim: nats-js-disk
+#       claimStorageSize: 3Gi
+# natsbox:
+#   enabled: false
+#   image: nats:alpine
+#   pullPolicy: IfNotPresent
+
+############################################################
+# NATS config
+############################################################
+config:
+  cluster:
+    enabled: true
+    port: 6222
+    # must be 2 or higher when jetstream is enabled
+    replicas: 3
+
+    # apply to generated route URLs that connect to other pods in the StatefulSet
+    routeURLs:
+      # if both user and password are set, they will be added to route URLs
+      # and the cluster authorization block
+      user: japaUser
+      password: myJapaSecret
+      # set to true to use FQDN in route URLs
+      useFQDN: false
+      k8sClusterDomain: cluster.local
+
+    # tls:
+    #   enabled: false
+    #   # set secretName in order to mount an existing secret to dir
+    #   secretName:
+    #   dir: /etc/nats-certs/cluster
+    #   cert: tls.crt
+    #   key: tls.key
+    #   # merge or patch the tls config
+    #   # https://docs.nats.io/running-a-nats-service/configuration/securing_nats/tls
+    #   merge: {}
+    #   patch: []
+
+    # # merge or patch the cluster config
+    # # https://docs.nats.io/running-a-nats-service/configuration/clustering/cluster_config
+    # merge: {}
+    # patch: []
 
   jetstream:
     enabled: true
 
-    fileStorage:
+    fileStore:
       enabled: true
-      storageDirectory: /nats-js-data/
-      existingClaim: nats-js-disk
-      claimStorageSize: 3Gi
-natsbox:
-  enabled: false
-  image: nats:alpine
-  pullPolicy: IfNotPresent
+      dir: /data
+
+      ############################################################
+      # stateful set -> volume claim templates -> jetstream pvc
+      ############################################################
+      pvc:
+        enabled: true
+        size: 10Gi
+        storageClassName:
+
+        # merge or patch the jetstream pvc
+        # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#persistentvolumeclaim-v1-core
+        merge: {}
+        patch: []
+        # defaults to "{{ include "nats.fullname" $ }}-js"
+        name:
+
+      # defaults to the PVC size
+      maxSize:
+
+    memoryStore:
+      enabled: false
+      # ensure that container has a sufficient memory limit greater than maxSize
+      maxSize: 1Gi
+
+    # merge or patch the jetstream config
+    # https://docs.nats.io/running-a-nats-service/configuration#jetstream
+    merge: {}
+    patch: []
+
+  nats:
+    port: 4222
+    # tls:
+    #   enabled: false
+    #   # set secretName in order to mount an existing secret to dir
+    #   secretName:
+    #   dir: /etc/nats-certs/nats
+    #   cert: tls.crt
+    #   key: tls.key
+    #   # merge or patch the tls config
+    #   # https://docs.nats.io/running-a-nats-service/configuration/securing_nats/tls
+    #   merge: {}
+    #   patch: []

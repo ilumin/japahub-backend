@@ -1,4 +1,4 @@
-import { connect, NatsConnection } from "nats";
+import { Authenticator, connect, NatsConnection } from "nats";
 
 export class NatsWrapper {
   private _client?: NatsConnection;
@@ -9,11 +9,14 @@ export class NatsWrapper {
   }
 
   async connect(
-    clusterName: string,
+    customAuth: Authenticator,
     serverUrls: string | string[] | undefined
   ): Promise<void> {
     try {
-      this._client = await connect({ servers: serverUrls, name: clusterName });
+      this._client = await connect({
+        authenticator: customAuth,
+        servers: serverUrls,
+      });
       console.log(
         `${
           this._moduleName ? this._moduleName : ""

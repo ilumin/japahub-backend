@@ -10,8 +10,11 @@ const natsWrapper = new NatsWrapper("notification module");
 
 async function setupListeners() {
   await startNats(natsWrapper);
+
+  console.log((await natsWrapper.client.request("$SYS.REQ.USER.INFO")).json());
+
   await new UserCreatedListener(natsWrapper.client).listen();
-  //await new UserRegisteredListener(natsWrapper.client).listen();
+  await new UserRegisteredListener(natsWrapper.client).listen();
 }
 
 setupListeners();

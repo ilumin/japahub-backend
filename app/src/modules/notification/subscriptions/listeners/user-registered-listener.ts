@@ -19,6 +19,6 @@ export class UserRegisteredListener extends Listener<UserRegisteredEvent> {
 
     //send email
 
-    msg.ack();
+    //msg.ack();
   }
 }

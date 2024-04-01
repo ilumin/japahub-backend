@@ -17,7 +17,7 @@ export abstract class Listener<T extends IDomainEvent> {
   abstract queueGroupName: string;
   abstract onMessage(data: T["data"], msg: JsMsg): void;
   private natsConnection: NatsConnection;
-  protected ackWait: number = 5 * 1000; // Default ackWait time
+  protected ackWait: number = 30 * 1000 * 1000 * 1000; //5 * 1000; // Default ackWait time
 
   constructor(natsConnection: NatsConnection) {
     this.natsConnection = natsConnection;
@@ -47,7 +47,7 @@ export abstract class Listener<T extends IDomainEvent> {
       await jsm.consumers.add(this.stream, {
         durable_name: name,
         deliver_group: this.queueGroupName,
-        deliver_subject: this.subject,
+        //deliver_subject: this.subject,
         ack_policy: AckPolicy.Explicit,
         ack_wait: this.ackWait,
         deliver_policy: DeliverPolicy.All,
@@ -57,7 +57,7 @@ export abstract class Listener<T extends IDomainEvent> {
       const jetStreamClient = this.natsConnection.jetstream();
       try {
         const jc = JSONCodec();
-        const consumer = await jetStreamClient.consumers.get(this.stream);
+        const consumer = await jetStreamClient.consumers.get(this.stream, name);
 
         while (true) {
           console.log("waiting for messages");
