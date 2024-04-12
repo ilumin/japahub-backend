@@ -8,13 +8,13 @@ export interface IUser extends Document {
   phone?: string;
   gender?: string;
   bio?: string;
-  imageUrl?: string;
+  avatar?: string;
   country?: string;
   language: string;
   dateofbirth?: Date;
   links: string[];
   password: string;
   role: "USER" | "ADMIN" | "CREATOR";
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }

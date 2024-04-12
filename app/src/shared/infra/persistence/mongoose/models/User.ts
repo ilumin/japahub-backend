@@ -19,11 +19,10 @@ const UserSchema = new Schema<IUser>(
     username: String,
     phone: {
       type: String,
-      unique: true,
     },
     gender: String,
     bio: String,
-    imageUrl: String,
+    avatar: String,
     country: String,
     language: {
       type: String,
@@ -40,18 +39,17 @@ const UserSchema = new Schema<IUser>(
       enum: ["USER", "ADMIN", "CREATOR"],
       default: "USER",
     },
-    created_at: {
+    createdAt: {
       type: Date,
       default: Date.now,
     },
-    updated_at: {
+    updatedAt: {
       type: Date,
       default: Date.now,
     },
   },
   {
-    timestamps: true,
-    collection: "user",
+    collection: "users",
   }
 );
 

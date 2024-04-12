@@ -23,8 +23,8 @@ build:
 manifests:
   rawYaml:
     - ./infra/k8s/*
-    - ./infra/helm/nats/k8s/pv-volume.yaml
-    - ./infra/helm/nats/k8s/pv-claim.yaml
+    # - ./infra/helm/nats/k8s/pv-volume.yaml
+    # - ./infra/helm/nats/k8s/pv-claim.yaml
 deploy:
   kubectl: {}
   helm:

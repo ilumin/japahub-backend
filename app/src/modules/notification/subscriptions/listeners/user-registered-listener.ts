@@ -15,10 +15,10 @@ export class UserRegisteredListener extends Listener<UserRegisteredEvent> {
   async onMessage(data: UserRegisteredEvent["data"], msg: JsMsg) {
     //get data out of event
     //const { userId, firstname, lastName, email, password } = data;
-    console.log(data);
+    console.log({ listenner: "UserRegisteredListener", data });
 
     //send email
 
-    //msg.ack();
+    msg.ack();
   }
 }

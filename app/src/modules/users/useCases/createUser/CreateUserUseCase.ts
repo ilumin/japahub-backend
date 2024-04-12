@@ -17,6 +17,7 @@ import {
   UseCase,
   AppError,
 } from "@japahubs/shared";
+import { UserDP } from "../../domain/userDP";
 
 type Response = Either<
   | CreateUserErrors.UsernameTakenError
@@ -41,13 +42,17 @@ export class CreateUserUseCase
     if (!!request.token === false) {
       return left(new CreateUserErrors.TokenExpiredError()) as Response;
     }
-    const userData = await this.authService.getRegisteredUser(request.token);
+    const claims = await this.authService.decodeJWT(request.token);
+    const userData = await this.authService.getRegisteredUser(claims.email);
 
     const firstNameOrError = Name.create({ value: userData.firstName });
     const lastNameOrError = Name.create({ value: userData.lastName });
     const emailOrError = UserEmail.create(userData.email);
     const passwordOrError = UserPassword.create({ value: userData.password });
     const usernameOrError = UserName.create({ value: request.username });
+    const avatarOrError = UserDP.create({
+      url: "https://res.cloudinary.com/dhqv8cxqz/image/upload/v1709890679/Frame_1743_up0e8x.svg",
+    });
 
     const dtoResult = Result.combine([
       firstNameOrError,
@@ -69,6 +74,7 @@ export class CreateUserUseCase
     const dateOfBirth = new Date(request.dateOfBirth);
     const language: Language = Language.create({ value: "English" }).getValue();
     const role: Role = "USER";
+    const avatar: UserDP = avatarOrError.getValue();
     const createdAt = new Date();
     const updatedAt = new Date();
 
@@ -93,6 +99,7 @@ export class CreateUserUseCase
         dateOfBirth,
         language,
         role,
+        avatar,
         createdAt,
         updatedAt,
       });

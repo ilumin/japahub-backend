@@ -37,9 +37,9 @@ export abstract class Publisher<T extends IDomainEvent> {
     const jetStreamClient = this.natsConnection.jetstream();
     try {
       await jetStreamClient.publish(this.subject, jc.encode(data));
-      console.log(
-        `[${this.stream} module] publishes a message to the subject: [${this.subject}]`
-      );
+      // console.log(
+      //   `[${this.stream} module] published a message to the subject: [${this.subject}]`
+      // );
     } catch (reason) {
       console.error(reason);
     }

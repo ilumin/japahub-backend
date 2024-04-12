@@ -17,7 +17,7 @@ export abstract class Listener<T extends IDomainEvent> {
   abstract queueGroupName: string;
   abstract onMessage(data: T["data"], msg: JsMsg): void;
   private natsConnection: NatsConnection;
-  protected ackWait: number = 30 * 1000 * 1000 * 1000; //5 * 1000; // Default ackWait time
+  protected ackWait: number = 30 * 1000 * 1000 * 1000; // 30 secs in nanosecs
 
   constructor(natsConnection: NatsConnection) {
     this.natsConnection = natsConnection;
@@ -39,28 +39,39 @@ export abstract class Listener<T extends IDomainEvent> {
         }
       }
 
-      const name = `q-${this.queueGroupName}-sub-${this.subject.replace(
-        ".",
-        "-"
-      )}-durable`;
+      const name = `q-${this.queueGroupName}-stream-user`;
+      const consumers = await jsm.consumers.list(this.stream).next();
 
-      await jsm.consumers.add(this.stream, {
-        durable_name: name,
-        deliver_group: this.queueGroupName,
-        //deliver_subject: this.subject,
-        ack_policy: AckPolicy.Explicit,
-        ack_wait: this.ackWait,
-        deliver_policy: DeliverPolicy.All,
-        name,
+      consumers.forEach(async (ci) => {
+        await jsm.consumers.delete(this.stream, ci.name);
       });
+
+      const nameExists = consumers.some((ci) => ci.name === name);
+
+      if (!nameExists) {
+        await jsm.consumers.add(this.stream, {
+          durable_name: name,
+          deliver_group: this.queueGroupName,
+          //deliver_subject: this.subject,
+          ack_policy: AckPolicy.Explicit,
+          ack_wait: this.ackWait,
+          deliver_policy: DeliverPolicy.All,
+          name,
+        });
+      }
+
+      // Print a list of all consumers for the sttream
+      // console.log(await jsm.consumers.list(this.stream).next());
+      // purge all messages in the stream
+      await jsm.streams.purge(this.stream);
 
       const jetStreamClient = this.natsConnection.jetstream();
       try {
         const jc = JSONCodec();
-        const consumer = await jetStreamClient.consumers.get(this.stream, name);
+        const consumer = await jetStreamClient.consumers.get(this.stream);
 
         while (true) {
-          console.log("waiting for messages");
+          console.log(`waiting for messages...`);
           const messages = await consumer.consume();
           try {
             for await (const msg of messages) {
@@ -69,6 +80,7 @@ export abstract class Listener<T extends IDomainEvent> {
               );
               this.onMessage(jc.decode(msg.data), msg);
               msg.ack();
+              await jsm.streams.deleteMessage(this.stream, msg.seq);
             }
           } catch (err) {
             console.log(`consume failed: ${err.message}`);

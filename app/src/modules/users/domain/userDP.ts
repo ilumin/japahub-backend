@@ -6,7 +6,13 @@ interface UserDPProps {
 }
 
 export class UserDP extends ValueObject<UserDPProps> {
-  private static readonly ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "gif"];
+  private static readonly ALLOWED_EXTENSIONS = [
+    "jpg",
+    "jpeg",
+    "png",
+    "gif",
+    "svg",
+  ];
 
   get url(): string {
     return this.props.url;

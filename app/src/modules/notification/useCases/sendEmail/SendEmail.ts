@@ -1,6 +1,7 @@
 import { Result, left, UseCase } from "@japahubs/shared";
 import { Mail, MailDetailsProps } from "../../domain/mail";
 import { IEmailService } from "../../services/mailer/emailService";
+import { authService } from "../../../users/services";
 
 interface Message {
   type: string;
@@ -21,11 +22,16 @@ export class SendEmail implements UseCase<Message, Promise<void>> {
       firstName: msg.data.firstName,
       lastName: msg.data.lastName,
       email: msg.data.email,
-      template: msg.type,
+      type: msg.type,
     };
 
-    if (msg.type === "user-registered" || msg.type === "forgot-password") {
-      mailProps.token = createToken(msg.data.email, msg.data.userId);
+    if (msg.type === "user.registered" || msg.type === "user.forgotpassword") {
+      mailProps.token = authService.signJWT({
+        userId: msg.data.userId,
+        email: msg.data.email,
+        username: "",
+        role: "",
+      });
     }
 
     const mailOrError = Mail.create(mailProps);
@@ -36,11 +42,6 @@ export class SendEmail implements UseCase<Message, Promise<void>> {
 
     const mail: Mail = mailOrError.getValue();
 
-    await this.emailService.sendMessage(mail);
+    await this.emailService.sendEmail(mail);
   }
-}
-
-function createToken(email: string, userId: string): string {
-  // not implemented yet
-  return userId;
 }

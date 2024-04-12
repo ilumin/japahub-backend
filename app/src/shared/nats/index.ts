@@ -5,7 +5,3 @@ export * from "./events/streams";
 export * from "./events/subjects";
 export * from "./events/user/user-created-event";
 export * from "./events/user/user-registered-event";
-
-// Types
-export * from "./types/taxonomy";
-export * from "./types/post";

@@ -3,16 +3,17 @@ import { NatsWrapper } from "../../../../shared/infra/broker/nats/nats-wrapper";
 import { UserCreatedPublisher } from "./publishers/user-created-publisher";
 import { UserRegisteredPublisher } from "./publishers/user-registered-publisher";
 
-const natsWrapper = new NatsWrapper("users module");
+//const natsWrapper = new NatsWrapper("users module");
 
 let userCreatedPublisher: UserCreatedPublisher;
 let userRegisteredPublisher: UserRegisteredPublisher;
 
 async function setupPublishers() {
-  await startNats(natsWrapper);
+  //await startNats(natsWrapper);
+  const client = await startNats("users module");
 
-  userCreatedPublisher = new UserCreatedPublisher(natsWrapper.client);
-  userRegisteredPublisher = new UserRegisteredPublisher(natsWrapper.client);
+  userCreatedPublisher = new UserCreatedPublisher(client);
+  userRegisteredPublisher = new UserRegisteredPublisher(client);
 }
 
 setupPublishers();

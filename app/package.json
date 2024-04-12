@@ -14,7 +14,7 @@
     "test:infra": "cross-env NODE_ENV=development jest -c jest.config.infra.ts"
   },
   "dependencies": {
-    "@japahubs/shared": "^1.0.4",
+    "@japahubs/shared": "^1.0.5",
     "@types/bcrypt-nodejs": "^0.0.31",
     "bcrypt-nodejs": "^0.0.3",
     "cors": "^2.8.5",

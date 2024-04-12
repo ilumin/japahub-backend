@@ -1,3 +1,4 @@
+import { NatsConnection } from "nats";
 import { NatsWrapper } from "./nats-wrapper";
 
 // Define the authenticator function
@@ -9,7 +10,10 @@ const customAuthenticator = (nonce?: string) => {
   };
 };
 
-export const startNats = async (natsWrapper: NatsWrapper) => {
+export const startNats = async (
+  moduleName: string
+): Promise<NatsConnection> => {
+  const natsWrapper = new NatsWrapper(moduleName);
   try {
     await natsWrapper.connect(customAuthenticator, "nats://nats-srv:4222");
     if (natsWrapper.client.isClosed()) {
@@ -18,6 +22,8 @@ export const startNats = async (natsWrapper: NatsWrapper) => {
     }
     process.on("SIGINT", async () => await natsWrapper.client.drain());
     process.on("SIGTERM", async () => await natsWrapper.client.drain());
+
+    return natsWrapper.client;
   } catch (err) {
     console.error(err);
   }

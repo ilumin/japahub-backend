@@ -4,7 +4,7 @@ import {
   Subjects,
   UserCreatedEvent,
 } from "../../../../shared/nats";
-import { JsMsg, NatsConnection } from "nats";
+import { JsMsg } from "nats";
 import { queueGroupName } from "../queue-group-name";
 
 export class UserCreatedListener extends Listener<UserCreatedEvent> {

@@ -46,8 +46,8 @@ export class UserMap implements Mapper<User> {
     const languageOrError = Language.create({ value: raw.language });
     const emailOrError = UserEmail.createFromRaw({ value: raw.email });
     const role: Role = raw.role;
-    const createdAt = raw.created_at;
-    const updatedAt = raw.updated_at;
+    const createdAt = raw.createdAt;
+    const updatedAt = raw.updatedAt;
 
     const userValues: any = {
       firstName: firstNameOrError.getValue(),
@@ -63,7 +63,7 @@ export class UserMap implements Mapper<User> {
     if (raw.username)
       userValues.username = UserName.create({ value: raw.username });
     if (raw.bio) userValues.bio = UserBio.create({ bio: raw.bio });
-    if (raw.imageUrl) userValues.avatar = UserDP.create({ url: raw.imageUrl });
+    if (raw.avatar) userValues.avatar = UserDP.create({ url: raw.avatar });
     if (raw.phone) userValues.phone = UserPhone.create({ value: raw.phone });
     if (raw.gender) userValues.gender = raw.gender;
     if (raw.country)
@@ -102,13 +102,13 @@ export class UserMap implements Mapper<User> {
       email: user.email.value,
       password: password,
       role: user.role,
-      created_at: user.createdAt,
-      updated_at: user.updatedAt,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
 
     if (user.username) raw.username = user.username.value;
     if (user.bio) raw.bio = user.bio.value;
-    if (user.avatar) raw.imageUrl = user.avatar.url;
+    if (user.avatar) raw.avatar = user.avatar.url;
     if (user.phone) raw.phone = user.phone.value;
     if (user.gender) raw.gender = user.gender;
     if (user.country) raw.country = user.country.value;

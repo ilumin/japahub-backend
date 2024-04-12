@@ -33,7 +33,8 @@ export class MongooseUserRepo implements IUserRepo {
         ? (userName as UserName).value
         : (userName as string);
     const user = await this.userModel.findOne({ username });
-    if (!user) throw new Error("User not found.");
+    // if (!user) throw new Error("User not found.");
+    if (!user) return null;
     return UserMap.toDomain(user);
   }
 
@@ -43,7 +44,8 @@ export class MongooseUserRepo implements IUserRepo {
         ? (userEmail as UserName).value
         : (userEmail as string);
     const user = await this.userModel.findOne({ email });
-    if (!user) throw new Error("User not found.");
+    // if (!user) throw new Error("User not found.");
+    if (!user) return null;
     return UserMap.toDomain(user);
   }
 
@@ -58,7 +60,7 @@ export class MongooseUserRepo implements IUserRepo {
       // Save the new user document
       await newUser.save();
 
-      dispatchEventsCallback(newUser._id);
+      dispatchEventsCallback(newUser._id.toString());
     }
 
     return;
